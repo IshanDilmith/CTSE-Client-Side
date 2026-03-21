@@ -1,85 +1,33 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, ShoppingCart } from "lucide-react";
-
-const products = [
-  {
-    id: 1,
-    name: "AirPods Pro Max",
-    category: "Earbuds",
-    price: 10000,
-    originalPrice: 15000,
-    rating: 4.8,
-    reviews: 245,
-    badge: "Best Seller",
-    emoji: "🎧",
-  },
-  {
-    id: 2,
-    name: "GaN 65W Charger",
-    category: "Chargers",
-    price: 5000,
-    originalPrice: 8000,
-    rating: 4.6,
-    reviews: 189,
-    badge: "New",
-    emoji: "⚡",
-  },
-  {
-    id: 3,
-    name: "MagSafe Crystal Case",
-    category: "Cases",
-    price: 2000,
-    originalPrice: 3000,
-    rating: 4.9,
-    reviews: 312,
-    badge: "Trending",
-    emoji: "📱",
-  },
-  {
-    id: 4,
-    name: "Smart Fitness Band",
-    category: "Gadgets",
-    price: 10000,
-    originalPrice: 15000,
-    rating: 4.7,
-    reviews: 156,
-    badge: "Hot",
-    emoji: "⌚",
-  },
-  {
-    id: 5,
-    name: "Wireless Charging Pad",
-    category: "Chargers",
-    price: 2000,
-    originalPrice: 3000,
-    rating: 4.5,
-    reviews: 203,
-    emoji: "🔋",
-  },
-  {
-    id: 6,
-    name: "Noise Cancel Buds",
-    category: "Earbuds",
-    price: 5000,
-    originalPrice: 8000,
-    rating: 4.8,
-    reviews: 178,
-    badge: "Sale",
-    emoji: "🎵",
-  },
-];
-
-const badgeColors = {
-  "Best Seller": "bg-amber-100 text-amber-700",
-  New: "bg-store-primary/10 text-store-primary",
-  Trending: "bg-purple-100 text-purple-700",
-  Hot: "bg-red-100 text-red-700",
-  Sale: "bg-green-100 text-green-700",
-};
+import { Loader2, Package, AlertCircle } from "lucide-react";
+import { getAllProducts } from "@/services/productService";
+import ProductCard from "@/components/Products/ProductCard";
 
 export default function FeaturedProducts() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getAllProducts();
+        setProducts(data.products?.slice(0, 6) || []);
+      } catch (err) {
+        console.error("Failed to fetch featured products:", err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
+
   return (
     <section id="featured-products" className="py-20 sm:py-28 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -97,88 +45,40 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product, index) => (
-            <Card
-              key={product.id}
-              className="group relative overflow-hidden border-0 bg-white shadow-sm hover:shadow-xl hover:shadow-store-primary/10 transition-all duration-500 animate-fade-in-up rounded-2xl"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Badge */}
-              {product.badge && (
-                <span
-                  className={`absolute top-4 right-4 z-10 rounded-full px-3 py-1 text-xs font-semibold ${
-                    badgeColors[product.badge] || "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {product.badge}
-                </span>
-              )}
-
-              {/* Product Visual */}
-              <div className="relative h-52 bg-gradient-to-br from-store-bg to-blue-50 flex items-center justify-center overflow-hidden">
-                <span className="text-7xl group-hover:scale-110 transition-transform duration-500">
-                  {product.emoji}
-                </span>
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-store-primary/0 group-hover:bg-store-primary/5 transition-all duration-500" />
-              </div>
-
-              <CardContent className="p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-store-accent uppercase tracking-wider">
-                    {product.category}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    <span className="text-xs font-medium text-store-text">
-                      {product.rating}
-                    </span>
-                    <span className="text-xs text-store-text-muted">
-                      ({product.reviews})
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="font-semibold text-store-text group-hover:text-store-primary transition-colors">
-                  {product.name}
-                </h3>
-
-                <div className="flex items-center justify-between pt-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-bold text-store-primary">
-                      LKR {product.price}
-                    </span>
-                    <span className="text-sm text-store-text-muted line-through">
-                      LKR {product.originalPrice}
-                    </span>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="bg-store-primary/10 text-store-primary hover:bg-store-primary hover:text-white transition-all duration-300 rounded-xl"
-                    id={`add-to-cart-${product.id}`}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="h-10 w-10 text-store-primary animate-spin" />
+            <p className="text-store-text-muted text-sm">Loading featured collection...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4 bg-store-bg/30 rounded-3xl border border-dashed border-gray-200">
+            <Package className="h-12 w-12 text-gray-300" />
+            <p className="text-gray-500 font-medium">New collection arriving soon</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product, index) => (
+              <ProductCard key={product._id} product={product} index={index} />
+            ))}
+          </div>
+        )}
 
         {/* View All */}
-        <div className="text-center mt-12">
-          <Link to="/products">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-store-primary/20 text-store-primary hover:bg-store-primary/5 rounded-xl px-8"
-              id="view-all-products-btn"
-            >
-              View All Products
-            </Button>
-          </Link>
-        </div>
+        {!loading && products.length > 0 && (
+          <div className="text-center mt-16 animate-fade-in-up">
+            <Link to="/products">
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-store-primary/20 text-store-primary hover:bg-store-primary/5 rounded-xl px-10 h-13 font-semibold group"
+                id="view-all-products-btn"
+              >
+                View All Products
+                <span className="ml-2 group-hover:translate-x-1 transition-transform inline-block">→</span>
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

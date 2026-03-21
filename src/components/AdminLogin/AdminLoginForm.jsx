@@ -29,7 +29,6 @@ export default function AdminLoginForm() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showSecurityKey, setShowSecurityKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -43,16 +42,9 @@ export default function AdminLoginForm() {
     setLoading(true);
     setError("");
 
-    // Client-side security key validation
-    if (!formData.securityKey.trim()) {
-      setError("Security key is required for admin access.");
-      setLoading(false);
-      return;
-    }
-
     try {
       const data = await loginUser(formData.email, formData.password);
-
+      console.log(data);
       // Verify the user has admin role
       if (data.user.role !== "admin") {
         setError("Access denied. Admin privileges required.");
@@ -62,6 +54,7 @@ export default function AdminLoginForm() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("auth-change"));
 
       toast.success('Successfully logged in!')
       navigate("/admin/dashboard");

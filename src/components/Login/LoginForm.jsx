@@ -35,6 +35,7 @@ export default function LoginForm() {
       const data = await loginUser(formData.email, formData.password);
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("auth-change"));
       toast.success('Successfully logged in!')
       navigate("/");
     } catch (err) {
