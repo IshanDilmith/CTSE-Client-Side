@@ -35,11 +35,15 @@ jobs:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
         run: echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
-      # Step 4: Build and Push Client Side Image
+      # Step 4: Build Client Side Image (UPDATED)
       - name: Build Client Side Image
         env:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-        run: docker build -t "$ACR_LOGIN_SERVER"/client-side:${{ github.run_number }} .
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} # 1. Pull secret into runner
+        run: |
+          docker build \
+            --build-arg VITE_API_BASE_URL="$VITE_API_BASE_URL" \
+            -t "$ACR_LOGIN_SERVER"/client-side:${{ github.run_number }} .
 
       # Step 5: Push Client Side Image
       - name: Push Client Side Image
