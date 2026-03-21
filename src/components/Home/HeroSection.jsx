@@ -93,7 +93,7 @@ export default function HeroSection() {
                     </p>
                     <div className="pt-2">
                       <span className="inline-block rounded-full bg-white/20 backdrop-blur-sm px-5 py-2 text-sm font-semibold text-white">
-                        Starting at $19.99
+                        Starting at LKR 500
                       </span>
                     </div>
                   </div>

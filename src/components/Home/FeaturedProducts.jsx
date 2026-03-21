@@ -8,8 +8,8 @@ const products = [
     id: 1,
     name: "AirPods Pro Max",
     category: "Earbuds",
-    price: 49.99,
-    originalPrice: 79.99,
+    price: 10000,
+    originalPrice: 15000,
     rating: 4.8,
     reviews: 245,
     badge: "Best Seller",
@@ -19,8 +19,8 @@ const products = [
     id: 2,
     name: "GaN 65W Charger",
     category: "Chargers",
-    price: 29.99,
-    originalPrice: 44.99,
+    price: 5000,
+    originalPrice: 8000,
     rating: 4.6,
     reviews: 189,
     badge: "New",
@@ -30,8 +30,8 @@ const products = [
     id: 3,
     name: "MagSafe Crystal Case",
     category: "Cases",
-    price: 24.99,
-    originalPrice: 39.99,
+    price: 2000,
+    originalPrice: 3000,
     rating: 4.9,
     reviews: 312,
     badge: "Trending",
@@ -41,8 +41,8 @@ const products = [
     id: 4,
     name: "Smart Fitness Band",
     category: "Gadgets",
-    price: 59.99,
-    originalPrice: 89.99,
+    price: 10000,
+    originalPrice: 15000,
     rating: 4.7,
     reviews: 156,
     badge: "Hot",
@@ -52,8 +52,8 @@ const products = [
     id: 5,
     name: "Wireless Charging Pad",
     category: "Chargers",
-    price: 19.99,
-    originalPrice: 34.99,
+    price: 2000,
+    originalPrice: 3000,
     rating: 4.5,
     reviews: 203,
     emoji: "🔋",
@@ -62,8 +62,8 @@ const products = [
     id: 6,
     name: "Noise Cancel Buds",
     category: "Earbuds",
-    price: 39.99,
-    originalPrice: 59.99,
+    price: 5000,
+    originalPrice: 8000,
     rating: 4.8,
     reviews: 178,
     badge: "Sale",
@@ -147,10 +147,10 @@ export default function FeaturedProducts() {
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-bold text-store-primary">
-                      ${product.price}
+                      LKR {product.price}
                     </span>
                     <span className="text-sm text-store-text-muted line-through">
-                      ${product.originalPrice}
+                      LKR {product.originalPrice}
                     </span>
                   </div>
                   <Button

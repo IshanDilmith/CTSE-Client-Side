@@ -20,13 +20,13 @@ import {
   Smartphone,
 } from "lucide-react";
 import { loginUser } from "@/services/authService";
+import { toast } from "react-hot-toast";
 
 export default function AdminLoginForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    securityKey: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showSecurityKey, setShowSecurityKey] = useState(false);
@@ -62,6 +62,8 @@ export default function AdminLoginForm() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
+      toast.success('Successfully logged in!')
       navigate("/admin/dashboard");
     } catch (err) {
       setError(
@@ -164,40 +166,6 @@ export default function AdminLoginForm() {
                     id="admin-toggle-password"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Security Key */}
-              <div className="space-y-2">
-                <Label htmlFor="admin-security-key" className="text-slate-300 font-medium flex items-center gap-1.5">
-                  <KeyRound className="h-3.5 w-3.5 text-store-accent" />
-                  Security Key
-                </Label>
-                <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                  <Input
-                    id="admin-security-key"
-                    name="securityKey"
-                    type={showSecurityKey ? "text" : "password"}
-                    placeholder="Enter admin security key"
-                    value={formData.securityKey}
-                    onChange={handleChange}
-                    required
-                    className="pl-10 pr-10 h-11 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-store-accent focus:ring-store-accent/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowSecurityKey(!showSecurityKey)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-store-accent transition-colors"
-                    aria-label="Toggle security key visibility"
-                    id="admin-toggle-security-key"
-                  >
-                    {showSecurityKey ? (
                       <EyeOff className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />

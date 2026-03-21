@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff, LogIn, Smartphone } from "lucide-react";
 import { loginUser } from "@/services/authService";
+import { toast } from "react-hot-toast";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ export default function LoginForm() {
       const data = await loginUser(formData.email, formData.password);
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      toast.success('Successfully logged in!')
       navigate("/");
     } catch (err) {
       setError(

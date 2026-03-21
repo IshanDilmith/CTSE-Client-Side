@@ -21,6 +21,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { registerUser } from "@/services/authService";
+import { toast } from "react-hot-toast";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ export default function RegisterForm() {
         email: formData.email,
         password: formData.password,
       });
+      toast.success('Successfully logged in!')
       navigate("/login");
     } catch (err) {
       setError(
