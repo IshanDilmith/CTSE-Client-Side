@@ -1,17 +1,14 @@
-FROM node:20-alpine
-
-# Set working directory
+# Stage 1: Build the React app
+FROM node:20-alpine AS build
 WORKDIR /app
-
-# Copy files
 COPY package*.json ./
-# Added --ignore-scripts to prevent execution of malicious pre/post install scripts
-RUN npm install --ignore-scripts
-
+RUN npm install
 COPY . .
+RUN npm run build
 
-# Expose port
-EXPOSE 5173
-
-# Start app
-CMD ["npm", "run", "dev"]
+# Stage 2: Serve with Nginx (Lightweight & Fast)
+FROM nginx:alpine
+# Vite builds to the 'dist' folder by default
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
