@@ -104,7 +104,7 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
 
     if (isEdit && imagesToDelete.length > 0) {
       imagesToDelete.forEach((id) => {
-        fd.append("imagesToDelete", id);
+        fd.append("imagesToDelete[]", id);
       });
     }
 
@@ -304,7 +304,6 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
           <div className="space-y-2">
             <Label className="text-sm font-medium text-store-text">
               {isEdit ? "Add New Images" : "Product Images"}{" "}
-              <span className="text-store-text-muted font-normal">(max 5)</span>
             </Label>
 
             {imagePreviews.length > 0 && (
