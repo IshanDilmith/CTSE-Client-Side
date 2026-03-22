@@ -119,7 +119,7 @@ export default function ProductCard({ product, index = 0 }) {
 
         <div className="flex items-center justify-between pt-1">
           <span className="text-xl font-bold text-store-primary">
-            LKR {Number(product.price).toLocaleString()}
+            LKR {Number(product.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
           </span>
           <div className="flex items-center gap-1.5 text-xs text-store-text-muted">
             <Package className="h-3.5 w-3.5" />

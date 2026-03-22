@@ -54,12 +54,19 @@ export default function CartPage() {
   const [showOrderConfirm, setShowOrderConfirm] = useState(false);
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const totalWeight = cartItems.reduce((acc, item) => acc + ((item.weight || 0) * item.quantity), 0);
   
   const calculateDeliveryFee = () => {
     if (subtotal === 0) return 0;
     if (!checkoutData.province) return 0;
+    
+    // Convert weight from grams to kg. At least 1kg is charged.
+    const weightInKg = Math.max(1, Math.ceil(totalWeight / 1000));
+    
     // Base rule: Western Province is 300, everywhere else is 450
-    return checkoutData.province === "Western Province" ? 300 : 450;
+    const baseFee = checkoutData.province === "Western Province" ? 300 : 450;
+    
+    return baseFee * weightInKg;
   };
   
   const deliveryFee = calculateDeliveryFee();
@@ -108,6 +115,7 @@ export default function CartPage() {
       
       navigate("/orders");
     } catch (error) {
+      console.log("Error: ", error);
       toast.error(error.response?.data?.error || "Failed to place order");
     } finally {
       setLoading(false);
@@ -175,12 +183,18 @@ export default function CartPage() {
                   {cartItems.map((item) => (
                     <div key={item.productId} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
                       <div className="flex items-center gap-6">
-                        <div className="h-24 w-24 bg-gray-50 rounded-2xl flex items-center justify-center shrink-0">
-                          <Package className="h-10 w-10 text-gray-400" />
-                        </div>
+                        <Link to={`/products/${item.productId}`} className="h-24 w-24 bg-gray-50 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden hover:opacity-80 transition-opacity">
+                          {item.images && item.images.length > 0 ? (
+                            <img src={item.images[0].url} alt={item.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <Package className="h-10 w-10 text-gray-400" />
+                          )}
+                        </Link>
                         <div>
-                          <h3 className="font-semibold text-lg text-store-text mb-1">{item.name}</h3>
-                          <p className="text-store-text-muted font-medium mb-2">LKR {Number(item.price).toLocaleString()}</p>
+                          <Link to={`/products/${item.productId}`} className="hover:text-store-primary transition-colors block">
+                            <h3 className="font-semibold text-lg text-store-text mb-1">{item.name}</h3>
+                          </Link>
+                          <p className="text-store-text-muted font-medium mb-2">LKR {Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                           <div className="inline-flex items-center px-3 py-1 rounded-lg bg-gray-50 text-sm font-medium text-store-text">
                             Qty: {item.quantity}
                           </div>
@@ -191,7 +205,7 @@ export default function CartPage() {
                         <div className="text-right">
                           <p className="text-xs text-store-text-muted mb-1">Item Total</p>
                           <p className="text-lg font-bold text-store-primary">
-                            LKR {(item.price * item.quantity).toLocaleString()}
+                            LKR {(item.price * item.quantity).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                           </p>
                         </div>
                         <Button
@@ -315,16 +329,16 @@ export default function CartPage() {
                   
                   <div className="flex justify-between text-sm">
                     <span className="text-store-text-muted">Subtotal ({cartItemsCount} items)</span>
-                    <span className="font-medium text-store-text">LKR {subtotal.toLocaleString()}</span>
+                    <span className="font-medium text-store-text">LKR {subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-store-text-muted">Delivery Fee</span>
-                    <span className="font-medium text-store-text">LKR {deliveryFee.toLocaleString()}</span>
+                    <span className="font-medium text-store-text">LKR {deliveryFee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                   </div>
                   
                   <div className="border-t border-dashed border-gray-200 pt-3 mt-3 flex justify-between items-center">
                     <span className="font-bold text-store-text">Total</span>
-                    <span className="text-2xl font-bold text-store-primary">LKR {total.toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-store-primary">LKR {total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                   </div>
                 </div>
 

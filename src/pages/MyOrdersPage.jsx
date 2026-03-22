@@ -129,7 +129,7 @@ export default function MyOrdersPage() {
                       </div>
                       <div>
                         <span className="font-medium text-gray-500">Total:</span>{" "}
-                        <span className="text-store-primary font-bold">LKR {Number(order.total).toLocaleString()}</span>
+                        <span className="text-store-primary font-bold">LKR {Number(order.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                       </div>
                     </div>
                   </div>

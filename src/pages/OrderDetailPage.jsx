@@ -120,10 +120,10 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="font-bold text-store-primary">
-                        LKR {(Number(item.price) * item.quantity).toLocaleString()}
+                        LKR {(Number(item.price) * item.quantity).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </p>
                       <p className="text-xs text-store-text-muted mt-1">
-                        LKR {Number(item.price).toLocaleString()} each
+                        LKR {Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} each
                       </p>
                     </div>
                   </div>
@@ -167,17 +167,17 @@ export default function OrderDetailPage() {
                   <div className="flex justify-between items-center py-1">
                     <span className="text-store-text-muted">Subtotal</span>
                     <span className="font-medium text-store-text">
-                      LKR {(order.total - order.deliveryFee + order.totalDiscount).toLocaleString()}
+                      LKR {(order.total - order.deliveryFee + order.totalDiscount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </span>
                   </div>
                   <div className="flex justify-between items-center py-1">
                     <span className="text-store-text-muted">Delivery Fee</span>
-                    <span className="font-medium text-store-text">LKR {order.deliveryFee?.toLocaleString() || 0}</span>
+                    <span className="font-medium text-store-text">LKR {order.deliveryFee ? order.deliveryFee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "0.00"}</span>
                   </div>
                   {order.totalDiscount > 0 && (
                     <div className="flex justify-between items-center py-1 text-green-600">
                       <span>Discount</span>
-                      <span className="font-medium">- LKR {order.totalDiscount.toLocaleString()}</span>
+                      <span className="font-medium">- LKR {order.totalDiscount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </div>
                   )}
                 </div>
@@ -186,7 +186,7 @@ export default function OrderDetailPage() {
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-store-text text-base">Total Price</span>
                     <span className="text-xl font-bold text-store-primary">
-                      LKR {Number(order.total).toLocaleString()}
+                      LKR {Number(order.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </span>
                   </div>
                 </div>

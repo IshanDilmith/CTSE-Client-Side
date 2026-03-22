@@ -53,7 +53,7 @@ export default function AdminDashboard() {
   const stats = [
     {
       label: "Total Revenue",
-      value: `LKR ${totalRevenue.toLocaleString()}`,
+      value: `LKR ${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
       icon: DollarSign,
       gradient: "from-amber-500 to-orange-600",
       shadow: "shadow-amber-500/20",
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
     },
     {
       label: "Inventory Value",
-      value: `LKR ${totalValue.toLocaleString()}`,
+      value: `LKR ${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
       icon: DollarSign,
       gradient: "from-indigo-500 to-blue-600",
       shadow: "shadow-indigo-500/20",
@@ -209,7 +209,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-sm font-semibold text-slate-700">
-                    LKR {Number(product.price).toLocaleString()}
+                    LKR {Number(product.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </p>
                   <p
                     className={`text-xs font-medium ${

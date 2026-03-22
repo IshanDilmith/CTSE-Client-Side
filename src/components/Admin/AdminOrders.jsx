@@ -5,6 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Package, Search, ChevronRight, ChevronLeft, CheckCircle2, Clock, XCircle, FileText } from "lucide-react";
 import { toast } from "react-hot-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -14,6 +24,8 @@ export default function AdminOrders() {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+  const [confirmStatusUpdate, setConfirmStatusUpdate] = useState(null); // { orderId, newStatus }
 
   const fetchOrders = async () => {
     try {
@@ -31,15 +43,20 @@ export default function AdminOrders() {
     fetchOrders();
   }, []);
 
-  const handleStatusChange = async (e, orderId) => {
+  const handleStatusChangeClick = (e, orderId) => {
     const newStatus = e.target.value;
+    const oldStatus = orders.find(o => o._id === orderId)?.status || 'Pending';
     
-    if (!window.confirm(`Are you sure you want to update this order's status to ${newStatus}?`)) {
+    setConfirmStatusUpdate({ orderId, newStatus, oldStatus });
+    // Reset the select value temporarily until confirmed
+    e.target.value = oldStatus;
+  };
 
-      e.target.value = orders.find(o => o._id === orderId)?.status || 'Pending';
-      return;
-    }
-
+  const executeStatusChange = async () => {
+    if (!confirmStatusUpdate) return;
+    
+    const { orderId, newStatus } = confirmStatusUpdate;
+    
     try {
       setUpdatingId(orderId);
       await updateOrderStatus(orderId, newStatus);
@@ -49,6 +66,7 @@ export default function AdminOrders() {
       toast.error("Failed to update status");
     } finally {
       setUpdatingId(null);
+      setConfirmStatusUpdate(null);
     }
   };
 
@@ -159,7 +177,7 @@ export default function AdminOrders() {
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 font-bold text-store-primary">
-                      LKR {Number(order.total).toLocaleString()}
+                      LKR {Number(order.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </td>
                     <td className="px-6 py-4">
                       {updatingId === order._id ? (
@@ -169,8 +187,8 @@ export default function AdminOrders() {
                       ) : (
                         <select
                           className={`px-3 py-1.5 rounded-lg border text-xs font-semibold uppercase tracking-wider outline-none cursor-pointer ${getStatusColor(order.status)}`}
-                          defaultValue={order.status}
-                          onChange={(e) => handleStatusChange(e, order._id)}
+                          value={order.status}
+                          onChange={(e) => handleStatusChangeClick(e, order._id)}
                         >
                           <option value="Pending">Pending</option>
                           <option value="Confirmed">Confirmed</option>
@@ -216,6 +234,26 @@ export default function AdminOrders() {
           </div>
         </div>
       )}
+      {/* Status Update Confirmation Dialog */}
+      <AlertDialog open={!!confirmStatusUpdate} onOpenChange={(open) => !open && setConfirmStatusUpdate(null)}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Order Status?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to change the status of order <span className="font-semibold text-slate-800">{orders.find(o => o._id === confirmStatusUpdate?.orderId)?.orderId}</span> to <span className="font-bold text-store-primary">{confirmStatusUpdate?.newStatus}</span>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={executeStatusChange}
+              className="bg-store-primary hover:bg-store-primary/90 text-white rounded-xl"
+            >
+              Update Status
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

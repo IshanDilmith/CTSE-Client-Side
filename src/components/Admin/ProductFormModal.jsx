@@ -3,6 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Upload, Trash2, ImagePlus, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const categoryOptions = [
   "Earbuds",
@@ -29,6 +38,7 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
   const [newImages, setNewImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
+  const [showImageLimitAlert, setShowImageLimitAlert] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -59,7 +69,7 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + newImages.length > 5) {
-      alert("Maximum 5 images allowed");
+      setShowImageLimitAlert(true);
       return;
     }
     setNewImages((prev) => [...prev, ...files]);
@@ -380,6 +390,22 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
           </div>
         </form>
       </div>
+
+      <AlertDialog open={showImageLimitAlert} onOpenChange={setShowImageLimitAlert}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Limit Reached</AlertDialogTitle>
+            <AlertDialogDescription>
+              Maximum 5 images allowed per product. Please remove some images before adding more.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction className="bg-store-primary hover:bg-store-primary/90 text-white rounded-xl">
+              Understand
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

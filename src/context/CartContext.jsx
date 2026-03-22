@@ -10,7 +10,10 @@ export function CartProvider({ children }) {
 
   const fetchCart = async () => {
     const userStr = localStorage.getItem("user");
-    if (!userStr) return;
+    if (!userStr) {
+      setCartItems([]);
+      return;
+    }
     
     try {
       const user = JSON.parse(userStr);

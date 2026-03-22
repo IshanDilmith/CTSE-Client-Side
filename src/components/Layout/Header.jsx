@@ -20,7 +20,6 @@ const navLinks = [
   { label: "Home", path: "/" },
   { label: "Products", path: "/products" },
   { label: "Categories", path: "/categories" },
-  { label: "About", path: "/about" },
 ];
 
 export default function Header() {

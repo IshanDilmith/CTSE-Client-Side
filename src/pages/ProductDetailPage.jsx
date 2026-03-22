@@ -262,7 +262,7 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-store-primary">
-                LKR {Number(product.price).toLocaleString()}
+                LKR {Number(product.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
               </span>
               {product.weight > 0 && (
                 <span className="text-sm text-store-text-muted bg-gray-100 rounded-full px-3 py-0.5">

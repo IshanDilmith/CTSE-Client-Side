@@ -304,7 +304,7 @@ export default function AdminProducts() {
                     {/* Price */}
                     <td className="px-5 py-4">
                       <span className="font-semibold text-slate-800">
-                        LKR {Number(product.price).toLocaleString()}
+                        LKR {Number(product.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </span>
                     </td>
 
