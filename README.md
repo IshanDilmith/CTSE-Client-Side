@@ -1,16 +1,98 @@
-# React + Vite
+# 📱 Mobile Parts Shop - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Shadcn UI](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com/)
 
-Currently, two official plugins are available:
+A modern, fast, and responsive React-based storefront for mobile accessories and parts. Built with Vite, Tailwind CSS, and Shadcn UI, this client-side application provides a seamless shopping experience and an integrated admin dashboard.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### **🛒 User Experience**
+- **Dynamic Product Browsing**: Explore a wide range of mobile accessories with category-based filtering.
+- **Detailed Product Pages**: Deep-dive into product specifications, ratings, and availability.
+- **Smart Shopping Cart**: Add/remove items, manage quantities, and persist your cart across sessions.
+- **Order Tracking**: View order history, track statuses, and see detailed invoice information.
+- **User Authentication**: Secure Login and Registration system.
+- **User Profile**: Manage personal details and track historical data.
 
-## Expanding the ESLint configuration
+### **🛠️ Admin Panel**
+- **Sales Analytics**: Dashboard view of key performance metrics.
+- **Product Management**: Create, update, and manage the product catalog.
+- **Order Fulfillment**: Review and manage customer orders.
+- **Admin Management**: Manage staff permissions and admin accounts.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite 8](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
+- **State Management**: React Context & Hooks
+- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **API Communication**: [Axios](https://axios-http.com/)
+- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+
+---
+
+## 📁 Project Structure
+
+```bash
+src/
+├── components/      # Reusable UI components (Shadcn + Custom)
+│   ├── Auth/        # Protected routes & login components
+│   ├── Layout/      # Header, Footer, Sidebar layouts
+│   └── ui/          # Core shadcn/ui components
+├── context/         # React Context for global state (Cart, User)
+├── lib/             # Utility functions (utils.js)
+├── pages/           # Page-level components (Home, Cart, Admin, etc.)
+├── services/        # Axios service layers for API communication
+├── App.jsx          # Main routing & application entry point
+└── main.jsx         # React DOM rendering
+```
+
+---
+
+## ⚙️ Getting Started
+
+### 1️⃣ Prerequisites
+- **Node.js**: v18.0 or higher
+- **npm** or **pnpm** or **yarn**
+
+### 2️⃣ Installation
+```bash
+git clone https://github.com/IshanDilmith/CTSE-Client-Side.git
+cd CTSE-Client-Side
+npm install
+```
+
+### 3️⃣ Environment Variables
+Create a `.env` file in the root directory and add the following:
+```env
+VITE_API_BASE_URL=https://your-api-gateway-url.com
+```
+
+### 4️⃣ Run locally
+```bash
+npm run dev
+```
+By default, the app runs on `http://localhost:5173`.
+
+---
+
+## 🐳 Dockerization
+
+The project includes a `Dockerfile` and `nginx.conf` for production deployments.
+
+### Local Build
+```bash
+docker build -t mobile-parts-frontend .
+docker run -p 80:80 mobile-parts-frontend
+```
+
+---
