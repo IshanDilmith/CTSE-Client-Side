@@ -18,7 +18,6 @@ export default function FeaturedProducts() {
         const data = await getAllProducts();
         setProducts(data.products?.slice(0, 6) || []);
       } catch (err) {
-        console.error("Failed to fetch featured products:", err);
         setProducts([]);
       } finally {
         setLoading(false);

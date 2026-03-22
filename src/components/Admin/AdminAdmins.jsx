@@ -30,7 +30,6 @@ export default function AdminAdmins() {
       setAdmins(adminsList);
     } catch (error) {
       toast.error("Failed to fetch administrators");
-      console.error(error);
     } finally {
       setLoading(false);
     }

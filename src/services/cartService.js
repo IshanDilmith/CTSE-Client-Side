@@ -6,7 +6,6 @@ import api from "./api";
  */
 export const getCart = async (userId) => {
   const response = await api.get(`/cart/${userId}`);
-  console.log("Cart Data: ", response.data)
   return response.data;
 };
 
@@ -16,7 +15,6 @@ export const getCart = async (userId) => {
  */
 export const addItem = async (userId, productId, quantity = 1) => {
   const response = await api.post("/cart/add", { userId, productId, quantity });
-  console.log("Cart adding: ", response.data)
   return response.data;
 };
 

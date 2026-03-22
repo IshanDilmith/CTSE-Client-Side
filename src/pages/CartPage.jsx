@@ -106,7 +106,6 @@ export default function CartPage() {
         totalDiscount: 0,
         total: total
       };
-      console.log("Order Payload: ", orderPayload);
 
       await createOrder(orderPayload);
       toast.success("Order placed successfully!");
@@ -115,7 +114,6 @@ export default function CartPage() {
       
       navigate("/orders");
     } catch (error) {
-      console.log("Error: ", error);
       toast.error(error.response?.data?.error || "Failed to place order");
     } finally {
       setLoading(false);
