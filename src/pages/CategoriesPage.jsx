@@ -144,7 +144,7 @@ export default function CategoriesPage() {
       <div className="min-h-screen">
         {/* Category Hero */}
         <section
-          className={`relative overflow-hidden py-12 sm:py-16 ${activeCategory.bg}`}
+          className={`relative overflow-hidden py-6 sm:py-8 ${activeCategory.bg}`}
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/30 blur-3xl" />

@@ -19,6 +19,8 @@ import {
   Eye,
   X,
   ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -32,6 +34,9 @@ export default function AdminProducts() {
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchProducts();
@@ -120,6 +125,11 @@ export default function AdminProducts() {
     return "text-green-600 bg-green-50";
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + rowsPerPage);
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -140,25 +150,46 @@ export default function AdminProducts() {
         </Button>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-        <Input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 pr-10 h-11 rounded-xl border-slate-200 bg-white focus:border-store-primary/30"
-          id="admin-product-search"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-200 flex items-center justify-center hover:bg-slate-300 transition-colors"
+      {/* Toolbar: Search and Row Count */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <div className="relative w-full sm:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="pl-10 pr-10 h-11 rounded-xl border-slate-200 bg-white focus:border-store-primary/30"
+            id="admin-product-search"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-200 flex items-center justify-center hover:bg-slate-300 transition-colors"
+            >
+              <X className="h-3 w-3 text-slate-500" />
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <span className="text-sm font-medium text-slate-500 whitespace-nowrap">Rows per page:</span>
+          <select
+            className="h-11 rounded-xl border border-slate-200 px-3 bg-white text-sm outline-none cursor-pointer focus:ring-2 focus:ring-store-primary/20 w-full sm:w-auto"
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
           >
-            <X className="h-3 w-3 text-slate-500" />
-          </button>
-        )}
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
       </div>
 
       {/* Products Table */}
@@ -229,7 +260,7 @@ export default function AdminProducts() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {filteredProducts.map((product) => (
+                {currentProducts.map((product) => (
                   <tr
                     key={product._id}
                     className="hover:bg-slate-50/60 transition-colors group"
@@ -317,11 +348,33 @@ export default function AdminProducts() {
             </table>
           </div>
 
-          {/* Table Footer */}
-          <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50">
-            <p className="text-xs text-slate-400">
-              Showing {filteredProducts.length} of {products.length} products
-            </p>
+
+
+          {/* Table Footer with Pagination */}
+          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 bg-slate-50/50">
+            <span className="text-xs text-slate-500">
+              Showing {filteredProducts.length === 0 ? 0 : startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredProducts.length)} of {filteredProducts.length} products
+            </span>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 rounded-md"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 rounded-md"
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       )}

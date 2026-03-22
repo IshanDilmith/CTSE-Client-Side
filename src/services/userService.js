@@ -8,3 +8,12 @@ export const fetchUserProfile = async (userId) => {
   const response = await api.get(`/auth/users/${userId}`);
   return response.data;
 };
+
+/**
+ * GET /auth/users
+ * Fetches all users
+ */
+export const fetchAllUsers = async () => {
+  const response = await api.get("/auth/adminUsers");
+  return response.data;
+};

@@ -44,7 +44,7 @@ export default function AdminLoginForm() {
 
     try {
       const data = await loginUser(formData.email, formData.password);
-      console.log(data);
+
       // Verify the user has admin role
       if (data.user.role !== "admin") {
         setError("Access denied. Admin privileges required.");

@@ -7,6 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  ShoppingBag,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,6 +22,16 @@ const navItems = [
     label: "Products",
     path: "/admin/products",
     icon: Package,
+  },
+  {
+    label: "Orders",
+    path: "/admin/orders",
+    icon: ShoppingBag,
+  },
+  {
+    label: "Admins",
+    path: "/admin/admins",
+    icon: Users,
   },
   {
     label: "Settings",

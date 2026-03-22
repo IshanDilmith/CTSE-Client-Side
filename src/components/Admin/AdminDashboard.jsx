@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAllProducts } from "@/services/productService";
+import { getAllOrders } from "@/services/orderService";
 import {
   Package,
   TrendingUp,
@@ -8,19 +9,27 @@ import {
   Loader2,
   ArrowUpRight,
   Boxes,
+  ShoppingBag,
+  Clock,
+  XCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getAllProducts();
-        setProducts(data.products || []);
+        const [prodData, orderData] = await Promise.all([
+          getAllProducts(),
+          getAllOrders()
+        ]);
+        setProducts(prodData.products || []);
+        setOrders(orderData.orders || []);
       } catch {
         // Silent fail — dashboard overview
       } finally {
@@ -36,7 +45,36 @@ export default function AdminDashboard() {
   const totalValue = products.reduce((sum, p) => sum + (p.price || 0) * (p.stock || 0), 0);
   const outOfStockCount = products.filter((p) => p.stock <= 0).length;
 
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const pendingOrders = orders.filter(o => o.status === "Pending").length;
+  const failedOrders = orders.filter(o => o.status === "Failed").length;
+
   const stats = [
+    {
+      label: "Total Revenue",
+      value: `LKR ${totalRevenue.toLocaleString()}`,
+      icon: DollarSign,
+      gradient: "from-amber-500 to-orange-600",
+      shadow: "shadow-amber-500/20",
+      bg: "bg-amber-50",
+    },
+    {
+      label: "Total Orders",
+      value: totalOrders,
+      icon: ShoppingBag,
+      gradient: "from-purple-500 to-fuchsia-600",
+      shadow: "shadow-purple-500/20",
+      bg: "bg-purple-50",
+    },
+    {
+      label: "Pending Orders",
+      value: pendingOrders,
+      icon: Clock,
+      gradient: "from-sky-500 to-cyan-600",
+      shadow: "shadow-sky-500/20",
+      bg: "bg-sky-50",
+    },
     {
       label: "Total Products",
       value: totalProducts,
@@ -54,20 +92,28 @@ export default function AdminDashboard() {
       bg: "bg-emerald-50",
     },
     {
-      label: "Inventory Value",
-      value: `LKR ${totalValue.toLocaleString()}`,
-      icon: DollarSign,
-      gradient: "from-amber-500 to-orange-600",
-      shadow: "shadow-amber-500/20",
-      bg: "bg-amber-50",
-    },
-    {
       label: "Low Stock Items",
       value: lowStockCount,
       icon: AlertTriangle,
       gradient: "from-rose-500 to-red-600",
       shadow: "shadow-rose-500/20",
       bg: "bg-rose-50",
+    },
+    {
+      label: "Inventory Value",
+      value: `LKR ${totalValue.toLocaleString()}`,
+      icon: DollarSign,
+      gradient: "from-indigo-500 to-blue-600",
+      shadow: "shadow-indigo-500/20",
+      bg: "bg-indigo-50",
+    },
+    {
+      label: "Failed Orders",
+      value: failedOrders,
+      icon: XCircle,
+      gradient: "from-red-500 to-rose-600",
+      shadow: "shadow-red-500/20",
+      bg: "bg-red-50",
     },
   ];
 
@@ -217,6 +263,19 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm font-medium text-slate-700">Manage Products</p>
                   <p className="text-xs text-slate-400">Add, edit, or remove products</p>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 ml-auto" />
+              </div>
+            </Link>
+
+            <Link to="/admin/orders" className="block mt-2">
+              <div className="flex items-center gap-3 rounded-xl p-3 bg-store-primary/5 hover:bg-store-primary/10 transition-colors cursor-pointer">
+                <div className="h-9 w-9 rounded-lg bg-store-primary/10 flex items-center justify-center">
+                  <ShoppingBag className="h-4 w-4 text-store-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-700">Manage Orders</p>
+                  <p className="text-xs text-slate-400">Update order status and fulfillment</p>
                 </div>
                 <ArrowUpRight className="h-4 w-4 text-slate-400 ml-auto" />
               </div>

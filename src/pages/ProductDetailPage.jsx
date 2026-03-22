@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProductById } from "@/services/productService";
+import { addItem } from "@/services/cartService";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -30,6 +32,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
@@ -40,7 +43,6 @@ export default function ProductDetailPage() {
         const data = await getProductById(id);
         setProduct(data.product);
       } catch {
-        // Silently handle — product will be null, showing not-found state
         setProduct(null);
       } finally {
         setLoading(false);
@@ -68,6 +70,29 @@ export default function ProductDetailPage() {
     if (stock <= 5)
       return { label: `Only ${stock} left — order soon!`, cls: "text-amber-600 bg-amber-50 border-amber-200" };
     return { label: "In Stock", cls: "text-green-600 bg-green-50 border-green-200" };
+  };
+
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+
+    if (!token || !userStr) {
+      toast.error("Please log in first to add items to the cart");
+      return;
+    }
+
+    try {
+      setAdding(true);
+      const user = JSON.parse(userStr);
+      const userId = user._id || user.id;
+      
+      await addItem(userId, product._id, quantity);
+      toast.success(`${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart!`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setAdding(false);
+    }
   };
 
   if (loading) {
@@ -295,12 +320,13 @@ export default function ProductDetailPage() {
 
               <Button
                 size="lg"
-                disabled={product.stock <= 0}
+                disabled={product.stock <= 0 || adding}
                 className="w-full h-13 bg-gradient-to-r from-store-primary to-store-primary-light text-white shadow-xl shadow-store-primary/25 hover:shadow-2xl hover:shadow-store-primary/30 transition-all duration-300 rounded-xl text-base font-semibold"
                 id="add-to-cart-detail-btn"
+                onClick={handleAddToCart}
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                {product.stock <= 0 ? "Out of Stock" : "Add to Cart"}
+                {adding ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <ShoppingCart className="h-5 w-5 mr-2" />}
+                {adding ? "Adding to Cart..." : product.stock <= 0 ? "Out of Stock" : "Add to Cart"}
               </Button>
             </div>
 

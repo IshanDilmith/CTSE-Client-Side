@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Package, Eye } from "lucide-react";
+import { ShoppingCart, Package, Eye, Loader2, Minus, Plus } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { useCart } from "@/context/CartContext";
 
 const categoryColors = {
   earbuds: { bg: "bg-violet-50", text: "text-violet-600", border: "border-violet-200" },
@@ -21,11 +24,35 @@ function getStockBadge(stock) {
 }
 
 export default function ProductCard({ product, index = 0 }) {
+  const [adding, setAdding] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+
   const catKey = (product.category || "").toLowerCase();
   const colors = categoryColors[catKey] || { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200" };
   const stockBadge = getStockBadge(product.stock);
 
   const mainImage = product.images && product.images.length > 0 ? product.images[0].url : null;
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+
+    if (!token || !userStr) {
+      toast.error("Please log in first to add items to the cart");
+      return;
+    }
+
+    try {
+      setAdding(true);
+      await addToCart(product._id, quantity);
+    } catch (err) {
+      // CartContext handles the error toast already, but we can catch if we need
+    } finally {
+      setAdding(false);
+    }
+  };
 
   return (
     <Card
@@ -58,22 +85,13 @@ export default function ProductCard({ product, index = 0 }) {
           <Link to={`/products/${product._id}`}>
             <Button
               size="sm"
-              className="bg-white/90 text-store-text hover:bg-white rounded-xl shadow-lg backdrop-blur-sm"
+              className="bg-white/90 text-store-text hover:bg-white rounded-xl shadow-lg backdrop-blur-sm px-6"
               id={`view-product-${product._id}`}
             >
               <Eye className="h-4 w-4 mr-1.5" />
-              View
+              Quick View
             </Button>
           </Link>
-          <Button
-            size="sm"
-            className="bg-store-primary text-white hover:bg-store-primary-dark rounded-xl shadow-lg"
-            disabled={product.stock <= 0}
-            id={`cart-product-${product._id}`}
-          >
-            <ShoppingCart className="h-4 w-4 mr-1.5" />
-            Add to Cart
-          </Button>
         </div>
       </div>
 
@@ -107,6 +125,40 @@ export default function ProductCard({ product, index = 0 }) {
             <Package className="h-3.5 w-3.5" />
             <span>{product.stock} left</span>
           </div>
+        </div>
+
+        {/* Action Area (Quantity & Add to Cart) Visible Always */}
+        <div className="pt-2 flex items-center gap-2">
+          {/* Quantity Selector */}
+          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden h-10 w-24 shrink-0">
+            <button
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="h-full w-8 flex items-center justify-center hover:bg-gray-50 transition-colors text-gray-500 disabled:opacity-50"
+              disabled={quantity <= 1}
+            >
+              <Minus className="h-3 w-3" />
+            </button>
+            <span className="flex-1 flex items-center justify-center font-medium text-store-text text-sm">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+              className="h-full w-8 flex items-center justify-center hover:bg-gray-50 transition-colors text-gray-500 disabled:opacity-50"
+              disabled={quantity >= product.stock}
+            >
+              <Plus className="h-3 w-3" />
+            </button>
+          </div>
+
+          <Button
+            size="sm"
+            className="h-10 flex-1 bg-store-primary text-white hover:bg-store-primary-dark rounded-lg shadow-sm"
+            disabled={product.stock <= 0 || adding}
+            onClick={handleAddToCart}
+          >
+            {adding ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <ShoppingCart className="h-4 w-4 mr-1.5" />}
+            {adding ? "Adding..." : "Add to Cart"}
+          </Button>
         </div>
       </CardContent>
     </Card>

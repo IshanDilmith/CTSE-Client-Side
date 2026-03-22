@@ -12,7 +12,9 @@ import {
   ChevronDown,
   UserCircle,
   Settings,
+  Package,
 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -26,6 +28,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const { cartItemsCount } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -144,17 +147,19 @@ export default function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-2" id="desktop-actions">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-store-text-muted hover:text-store-primary hover:bg-store-primary/5"
-            id="cart-btn"
-          >
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-store-accent text-[10px] font-bold text-white">
-              0
-            </span>
-          </Button>
+          <Link to="/cart">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-store-text-muted hover:text-store-primary hover:bg-store-primary/5"
+              id="cart-btn"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-store-accent text-[10px] font-bold text-white">
+                {cartItemsCount}
+              </span>
+            </Button>
+          </Link>
 
           {user ? (
             /* Logged-in: User Avatar + Dropdown */
@@ -202,6 +207,14 @@ export default function Header() {
                     >
                       <UserCircle className="h-4 w-4" />
                       My Profile
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-store-text-muted hover:text-store-primary hover:bg-store-primary/5 transition-colors"
+                      id="user-orders-link"
+                    >
+                      <Package className="h-4 w-4" />
+                      My Orders
                     </Link>
                     {user.role === "admin" && (
                       <Link
@@ -303,6 +316,17 @@ export default function Header() {
                     <p className="text-xs text-store-text-muted">{user.email}</p>
                   </div>
                 </div>
+                <Link to="/orders" className="block">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    size="sm"
+                    id="mobile-orders-link"
+                  >
+                    <Package className="h-4 w-4" />
+                    My Orders
+                  </Button>
+                </Link>
                 {user.role === "admin" && (
                   <Link to="/admin/dashboard" className="block">
                     <Button
