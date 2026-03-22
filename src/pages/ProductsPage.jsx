@@ -16,6 +16,8 @@ import {
   Cable,
   Speaker,
   Grid3X3,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const categories = [
@@ -43,10 +45,22 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 12;
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery, sortBy]);
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   const fetchProducts = async () => {
     try {
@@ -101,6 +115,13 @@ export default function ProductsPage() {
 
     return result;
   }, [products, selectedCategory, searchQuery, sortBy]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const currentProducts = useMemo(() => {
+    const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
 
   return (
     <div className="min-h-screen">
@@ -211,8 +232,16 @@ export default function ProductsPage() {
       {/* Results Info */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-store-text-muted">
+            <p className="text-sm text-store-text-muted">
             Showing{" "}
+            <span className="font-semibold text-store-text">
+              {filteredProducts.length > 0 ? (currentPage - 1) * PRODUCTS_PER_PAGE + 1 : 0}
+            </span>{" "}
+            to{" "}
+            <span className="font-semibold text-store-text">
+              {Math.min(currentPage * PRODUCTS_PER_PAGE, filteredProducts.length)}
+            </span>{" "}
+            of{" "}
             <span className="font-semibold text-store-text">
               {filteredProducts.length}
             </span>{" "}
@@ -270,9 +299,75 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product, index) => (
+            {currentProducts.map((product, index) => (
               <ProductCard key={product._id} product={product} index={index} />
             ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!loading && totalPages > 1 && (
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="rounded-xl border-store-primary/15 hover:bg-store-primary/5 h-11 w-11"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+
+              <div className="flex items-center gap-2 px-2">
+                {[...Array(totalPages)].map((_, i) => {
+                  const pageNumber = i + 1;
+                  // Show max 5 page buttons on mobile, or all on desktop if small
+                  // For simplicity, showing all here if totalPages is small, or a sliding window
+                  if (
+                    totalPages <= 7 ||
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                  ) {
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={currentPage === pageNumber ? "default" : "outline"}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`h-11 w-11 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                          currentPage === pageNumber
+                            ? "bg-store-primary text-white shadow-lg shadow-store-primary/25"
+                            : "border-store-primary/10 hover:border-store-primary/30 hover:bg-store-primary/5 text-store-text-muted"
+                        }`}
+                      >
+                        {pageNumber}
+                      </Button>
+                    );
+                  } else if (
+                    pageNumber === currentPage - 2 ||
+                    pageNumber === currentPage + 2
+                  ) {
+                    return <span key={pageNumber} className="text-store-text-muted px-1">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="rounded-xl border-store-primary/15 hover:bg-store-primary/5 h-11 w-11"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            <p className="text-sm text-store-text-muted font-medium">
+              Page <span className="text-store-text">{currentPage}</span> of {totalPages}
+            </p>
           </div>
         )}
       </section>

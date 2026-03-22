@@ -140,7 +140,7 @@ export default function ProductFormModal({ isOpen, onClose, onSubmit, product, l
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl animate-fade-in-up">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl animate-fade-in-up">
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-white/95 backdrop-blur-sm border-b border-gray-100 px-6 py-4 rounded-t-2xl">
           <div>

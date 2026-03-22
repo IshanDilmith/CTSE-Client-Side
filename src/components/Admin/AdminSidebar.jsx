@@ -6,7 +6,6 @@ import {
   Smartphone,
   ChevronLeft,
   ChevronRight,
-  Settings,
   ShoppingBag,
   Users,
 } from "lucide-react";
@@ -32,11 +31,6 @@ const navItems = [
     label: "Admins",
     path: "/admin/admins",
     icon: Users,
-  },
-  {
-    label: "Settings",
-    path: "/admin/settings",
-    icon: Settings,
   },
 ];
 

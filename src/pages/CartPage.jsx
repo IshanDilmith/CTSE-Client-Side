@@ -96,8 +96,12 @@ export default function CartPage() {
       
       const orderPayload = {
         userId: user._id || user.id,
+        userEmail: user.email,
+        userName: user.fullname || user.name || "Anonymous",
         items: cartItems.map(item => ({
           productId: item.productId,
+          productName: item.name,
+          productImage: item.images?.[0]?.url || "",
           price: item.price,
           quantity: item.quantity
         })),

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getAllOrders, updateOrderStatus } from "@/services/orderService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Package, Search, ChevronRight, ChevronLeft, CheckCircle2, Clock, XCircle, FileText } from "lucide-react";
+import { Loader2, Package, Search, ChevronRight, ChevronLeft, CheckCircle2, Clock, XCircle, FileText, Eye, MapPin, CreditCard, User, Mail, Phone, Receipt } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
   AlertDialog,
@@ -26,6 +26,7 @@ export default function AdminOrders() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const [confirmStatusUpdate, setConfirmStatusUpdate] = useState(null); // { orderId, newStatus }
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -164,7 +165,7 @@ export default function AdminOrders() {
                   <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Total Amount</th>
                   <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Actions</th>
+                  <th className="px-6 py-4 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -197,8 +198,15 @@ export default function AdminOrders() {
                         </select>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                       <span className="text-xs text-slate-400">Manage via Status</span>
+                    <td className="px-6 py-4 text-center">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-lg text-slate-400 hover:text-store-primary hover:bg-store-primary/10"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -251,6 +259,121 @@ export default function AdminOrders() {
             >
               Update Status
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Order Overview Dialog */}
+      <AlertDialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <AlertDialogContent size="xl" className="rounded-3xl max-h-[90vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex justify-between items-center text-xl font-bold border-b pb-4">
+              <span>Order Details - {selectedOrder?.orderId}</span>
+              <span className={`text-xs px-2.5 py-1 rounded-full border ${getStatusColor(selectedOrder?.status)} uppercase tracking-wider`}>
+                {selectedOrder?.status}
+              </span>
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          
+          <div className="space-y-6 pt-4 text-left">
+            {/* Customer & Shipping Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-tight">
+                  <User className="h-4 w-4" /> Customer Info
+                </h4>
+                <div className="bg-slate-50 p-4 rounded-2xl space-y-2 text-sm">
+                  <p className="font-bold text-slate-800">{selectedOrder?.userId?.fullname || "Customer"}</p>
+                  <p className="flex items-center gap-2 text-slate-600">
+                    <Mail className="h-3 w-3" /> {selectedOrder?.userEmail || selectedOrder?.userId?.email || "No email provided"}
+                  </p>
+                  {selectedOrder?.userId?.phone && (
+                    <p className="flex items-center gap-2 text-slate-600">
+                      <Phone className="h-3 w-3" /> {selectedOrder?.userId?.phone || selectedOrder.phone}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-tight">
+                  <MapPin className="h-4 w-4" /> Shipping
+                </h4>
+                <div className="bg-slate-50 p-4 rounded-2xl space-y-1 text-sm">
+                  <p className="font-bold text-slate-800">{selectedOrder?.deliveryAddress}</p>
+                  <p className="text-slate-600">{selectedOrder?.district}, {selectedOrder?.province}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="space-y-3">
+              <h4 className="flex items-center gap-2 text-sm font-bold text-slate-500 uppercase tracking-tight">
+                <Receipt className="h-4 w-4" /> Items ({selectedOrder?.items?.length || 0})
+              </h4>
+              <div className="border border-slate-100 rounded-2xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-semibold">Product</th>
+                      <th className="px-4 py-2 text-center font-semibold">Qty</th>
+                      <th className="px-4 py-2 text-right font-semibold">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {selectedOrder?.items?.map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden border border-slate-200">
+                              {item.productImage?.url ? (
+                                <img src={item.productImage.url} alt="" className="h-full w-full object-cover" />
+                              ) : (
+                                <Package className="h-5 w-5 text-slate-400" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-bold text-slate-800">{item.productName || "Product"}</p>
+                              <p className="text-xs text-slate-400 font-medium">ID: {item.productId}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-center text-slate-600">{item.quantity}</td>
+                        <td className="px-4 py-3 text-right font-bold text-slate-700">LKR {item.price?.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-slate-50 font-bold border-t">
+                    <tr>
+                      <td colSpan="2" className="px-4 py-3 text-right text-slate-500 uppercase">Subtotal</td>
+                      <td className="px-4 py-3 text-right">LKR {(Number(selectedOrder?.total) - (selectedOrder?.deliveryFee || 0)).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="2" className="px-4 py-2 text-right text-slate-500 uppercase">Delivery Fee</td>
+                      <td className="px-4 py-2 text-right">LKR {selectedOrder?.deliveryFee?.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) || "0.00"}</td>
+                    </tr>
+                    <tr className="bg-slate-100 text-store-primary">
+                      <td colSpan="2" className="px-4 py-3 text-right text-lg uppercase">Total Amount</td>
+                      <td className="px-4 py-3 text-right text-lg">LKR {Number(selectedOrder?.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="flex items-center gap-2 text-sm font-bold text-slate-700 uppercase">
+                <CreditCard className="h-4 w-4 text-store-primary" /> Payment Method
+              </span>
+              <span className="text-sm font-bold text-store-primary uppercase">{selectedOrder?.payMethod || "COD"}</span>
+            </div>
+          </div>
+
+          <AlertDialogFooter className="mt-6 border-t pt-4">
+            <AlertDialogCancel className="rounded-xl bg-slate-100 border-none hover:bg-slate-200 text-slate-600">
+              Close Overview
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

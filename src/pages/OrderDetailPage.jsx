@@ -108,13 +108,17 @@ export default function OrderDetailPage() {
                 {order.items.map((item, index) => (
                   <div key={index} className="flex items-center justify-between gap-4 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
                     <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 bg-gray-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-100">
-                        <Package className="h-8 w-8 text-gray-400" />
+                      <div className="h-16 w-16 bg-gray-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
+                        {item.productImage?.url ? (
+                          <img src={item.productImage.url} alt={item.productName} className="h-full w-full object-cover" />
+                        ) : (
+                          <Package className="h-8 w-8 text-gray-400" />
+                        )}
                       </div>
                       <div>
-                        {/* We don't have product name in the order item if not saved, just productId */}
-                        {/* Assuming product info is just what's in order doc. Fallback to generic name with ID */}
-                        <h3 className="font-semibold text-store-text line-clamp-1">Product ID: {item.productId}</h3>
+                        <h3 className="font-semibold text-store-text line-clamp-1">
+                          {item.productName || `Product ID: ${item.productId}`}
+                        </h3>
                         <p className="text-sm text-store-text-muted mt-1 font-medium">Qty: {item.quantity}</p>
                       </div>
                     </div>
