@@ -41,7 +41,7 @@ export default function HeroSection() {
               <Link to="/products">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-store-primary to-store-primary-light text-white shadow-xl shadow-store-primary/25 hover:shadow-2xl hover:shadow-store-primary/30 transition-all duration-300 text-base px-8 h-12 rounded-xl"
+                  className="bg-red-500 from-store-primary to-store-primary-light text-white shadow-xl shadow-store-primary/25 hover:shadow-2xl hover:shadow-store-primary/30 transition-all duration-300 text-base px-8 h-12 rounded-xl"
                   id="hero-shop-btn"
                 >
                   Shop Now
